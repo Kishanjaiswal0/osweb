@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Proc{% endblock %}
+
+{% block content %}
+<h2>Processes</h2>
+
+<pre class="bg-dark text-white p-3 rounded mt-3 processes-pre">
+{% for line in processes %}
+{{ line }}
+{% endfor %}
+</pre>
+{% endblock %}

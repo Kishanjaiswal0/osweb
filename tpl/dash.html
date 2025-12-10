@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Dash{% endblock %}
+
+{% block content %}
+<h2 class="mb-3">Hi, {{ user }} 👋</h2>
+<p class="text-muted">Role: {{ role }}</p>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card metric-card">
+      <div class="card-body">
+        <h6>CPU</h6>
+        <h3 id="cpuNow">{{ metrics.cpu }}%</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card metric-card">
+      <div class="card-body">
+        <h6>Memory</h6>
+        <h3 id="memNow">{{ metrics.memory }}%</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card metric-card">
+      <div class="card-body">
+        <h6>Disk</h6>
+        <h3 id="diskNow">{{ metrics.disk }}%</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <h5 class="card-title mb-3">Live Monitor</h5>
+    <canvas id="metricsChart" height="120"></canvas>
+    <small class="text-muted">Refresh: 3 sec</small>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-4">
+    <a href="{{ url_for('files') }}" class="btn btn-dark w-100 btn-lg">📁 Files</a>
+  </div>
+  <div class="col-md-4">
+    <a href="{{ url_for('proc') }}" class="btn btn-primary w-100 btn-lg">⚙️ Proc</a>
+  </div>
+  {% if role == "admin" %}
+  <div class="col-md-4">
+    <a href="{{ url_for('logs') }}" class="btn btn-danger w-100 btn-lg">📜 Logs</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const ctx = document.getElementById('metricsChart').getContext('2d');
+const labels = [];
+const cpuData = [];
+const memData = [];
+
+const chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: labels,
+        datasets: [
+          { label: 'CPU %', data: cpuData, borderWidth: 2, tension: 0.3 },
+          { label: 'Mem %', data: memData, borderWidth: 2, tension: 0.3 }
+        ]
+    },
+    options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true, max: 100 } }
+    }
+});
+
+function addDataPoint() {
+    fetch("{{ url_for('api_metrics') }}")
+      .then(res => res.json())
+      .then(data => {
+          const now = new Date().toLocaleTimeString();
+          labels.push(now);
+          cpuData.push(data.cpu);
+          memData.push(data.memory);
+
+          if (labels.length > 20) {
+              labels.shift();
+              cpuData.shift();
+              memData.shift();
+          }
+
+          document.getElementById("cpuNow").textContent = data.cpu + "%";
+          document.getElementById("memNow").textContent = data.memory + "%";
+          document.getElementById("diskNow").textContent = data.disk + "%";
+
+          chart.update();
+      });
+}
+
+addDataPoint();
+setInterval(addDataPoint, 3000);
+</script>
+{% endblock %}

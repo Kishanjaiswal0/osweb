@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Files{% endblock %}
+
+{% block content %}
+<h2>File Manager</h2>
+
+{% if message %}
+  <div class="alert alert-info mt-3">{{ message }}</div>
+{% endif %}
+
+<!-- CREATE / DELETE -->
+<form method="POST" class="row g-2 mt-3">
+  <div class="col-md-5">
+    <input class="form-control" name="filename" placeholder="Enter filename" required>
+  </div>
+
+  <div class="col-md-2">
+    <button class="btn btn-success w-100" name="action" value="create">Create</button>
+  </div>
+
+  {% if role == "admin" %}
+  <div class="col-md-2">
+    <button class="btn btn-danger w-100" name="action" value="delete">Delete</button>
+  </div>
+  {% endif %}
+</form>
+
+<br>
+
+<h4>Files</h4>
+<ul class="list-group">
+  {% for f in files %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+          {{ f }}
+          <form method="POST" class="d-flex">
+            <input type="hidden" name="filename" value="{{ f }}">
+            <button class="btn btn-sm btn-primary me-2" name="action" value="read">Read</button>
+
+            {% if role == "admin" %}
+            <button class="btn btn-sm btn-warning" name="action" value="edit">Edit</button>
+            {% endif %}
+          </form>
+      </li>
+  {% endfor %}
+</ul>
+
+<!-- SHOW CONTENT -->
+{% if selected_file %}
+  <h4 class="mt-4">Editing: {{ selected_file }}</h4>
+
+  <form method="POST">
+    <input type="hidden" name="filename" value="{{ selected_file }}">
+    <input type="hidden" name="action" value="write">
+
+    <textarea class="form-control" name="filedata" rows="10">{{ content }}</textarea>
+
+    <button class="btn btn-primary mt-3">Save Changes</button>
+  </form>
+{% endif %}
+
+{% endblock %}

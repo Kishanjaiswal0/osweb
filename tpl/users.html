@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Users{% endblock %}
+
+{% block content %}
+<h2>User Management</h2>
+
+{% if message %}
+  <div class="alert alert-info mt-3">{{ message }}</div>
+{% endif %}
+
+<table class="table table-striped mt-3">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Username</th>
+      <th>Role</th>
+      <th>Approved</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for u in users %}
+    <tr>
+      <td>{{ u.id }}</td>
+      <td>{{ u.username }}</td>
+      <td>{{ u.role }}</td>
+      <td>
+        {% if u.approved %}
+          ✅
+        {% else %}
+          ⏳
+        {% endif %}
+      </td>
+      <td>
+        <form method="POST" class="d-inline">
+          <input type="hidden" name="user_id" value="{{ u.id }}">
+
+          {% if not u.approved %}
+          <button class="btn btn-sm btn-success" name="action" value="approve">Approve</button>
+          {% endif %}
+
+          {% if u.role != "admin" %}
+          <button class="btn btn-sm btn-outline-primary" name="action" value="make_admin">Make Admin</button>
+          {% else %}
+          <button class="btn btn-sm btn-outline-secondary" name="action" value="make_user">Make User</button>
+          {% endif %}
+
+          {% if u.username != "admin" %}
+          <button class="btn btn-sm btn-danger" name="action" value="delete"
+                  onclick="return confirm('Delete this user?');">
+            Delete
+          </button>
+          {% endif %}
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

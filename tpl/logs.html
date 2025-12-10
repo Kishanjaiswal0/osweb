@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Logs{% endblock %}
+
+{% block content %}
+<h2>Logs (Admin)</h2>
+
+<pre class="bg-dark text-white p-3 rounded mt-3 logs-pre">
+{% for l in logs %}
+{{ l }}
+{% endfor %}
+</pre>
+{% endblock %}

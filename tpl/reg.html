@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<h2 class="mb-3">Register</h2>
+
+{% if error %}
+  <div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+{% if success %}
+  <div class="alert alert-success">{{ success }}</div>
+{% endif %}
+
+<form method="POST" class="mt-3">
+  <div class="mb-3">
+    <label class="form-label">Username</label>
+    <input class="form-control" name="username" required>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Password</label>
+    <input class="form-control" name="password" type="password" required>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Confirm Password</label>
+    <input class="form-control" name="confirm" type="password" required>
+  </div>
+
+  <button class="btn btn-primary">Register</button>
+  <a href="{{ url_for('login') }}" class="btn btn-link">Back to login</a>
+</form>
+
+<p class="text-muted mt-3">
+  After registration, your account must be approved by admin.
+</p>
+{% endblock %}
